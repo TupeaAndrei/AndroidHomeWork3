@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/lime_green"
+    android:padding="@dimen/default_padding">
+
+
+    <TextView
+        android:id="@+id/book_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="title"
+        android:textSize="@dimen/default_title_size"
+        android:maxLines="1"
+        android:ellipsize="end"
+        />
+
+    <TextView
+        android:id="@+id/book_author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/book_title"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Author"
+        android:textSize="@dimen/default_author_size"
+        android:maxLines="1"
+        android:ellipsize="end"/>
+
+    <TextView
+        android:id="@+id/book_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/book_author"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Description"
+        android:textSize="@dimen/default_description_size"
+        android:maxLines="3"
+        android:ellipsize="end"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
