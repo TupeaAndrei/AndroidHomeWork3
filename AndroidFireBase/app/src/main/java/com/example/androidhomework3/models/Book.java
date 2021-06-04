@@ -1,13 +1,29 @@
 package com.example.androidhomework3.models;
 
+import com.example.androidhomework3.models.firebasemodels.BookFB;
+
 public class Book {
     private String id;
     private String title;
     private String author;
     private String description;
 
-    public Book(String id, String title, String author, String description) {
-        this.id = id;
+    public Book(){
+        id = null;
+        title = null;
+        author = null;
+        description = null;
+    }
+
+    public Book(BookFB fb)
+    {
+        id = null;
+        this.title = fb.getTitle();
+        this.author = fb.getAuthor();
+        this.description = fb.getDescription();
+    }
+
+    public Book(String title, String author, String description) {
         this.title = title;
         this.author = author;
         this.description = description;

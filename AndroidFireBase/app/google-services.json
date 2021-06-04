@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "637676377655",
+    "firebase_url": "https://androidbooklibrary-default-rtdb.firebaseio.com",
+    "project_id": "androidbooklibrary",
+    "storage_bucket": "androidbooklibrary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637676377655:android:d9cdfcaa5de0d9437151b2",
+        "android_client_info": {
+          "package_name": "com.example.androidhomework3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637676377655-lnvdpctc4dscn3k15fi71qgip01vtmri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrBnNCNFNcGHEVSGnPaOYp_B0OBrnHJ_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637676377655-lnvdpctc4dscn3k15fi71qgip01vtmri.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
