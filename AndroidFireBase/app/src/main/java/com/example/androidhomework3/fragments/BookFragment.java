@@ -54,38 +54,43 @@ public class BookFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.book_fragment,container,false);
+        View view = inflater.inflate(R.layout.book_fragment, container, false);
         currentView = view;
         setupView();
         return view;
     }
 
-    public void setupView(){
+    public void setupView() {
         setupRecyclerView();
 
         titleEditText = currentView.findViewById(R.id.book_title_edit);
         authorEditText = currentView.findViewById(R.id.book_author_edit);
         descriptionEditText = currentView.findViewById(R.id.book_description_edit);
-        getBooks();
-        if (books.contains(new Book(titleEditText.getText().toString(),authorEditText.getText().toString(),
-                descriptionEditText.getText().toString()))) {
-            currentView.findViewById(R.id.add_update_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateBook(new Book(titleEditText.toString(),authorEditText.toString(),descriptionEditText.toString()));
-                    Toast.makeText(getContext(),"Book Updated!",Toast.LENGTH_SHORT);
-                }
-            });
-        }
-        else
-        {
-            currentView.findViewById(R.id.add_update_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        currentView.findViewById(R.id.add_update_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkForUpdate(titleEditText.getText().toString())) {
+                    updateBook(new Book(titleEditText.toString(), authorEditText.toString(), descriptionEditText.toString()));
+                    Toast.makeText(getContext(), "Book Updated!", Toast.LENGTH_SHORT);
+                } else {
                     insertBook();
                 }
-            });
+            }
+        });
+    }
+
+
+    private boolean checkForUpdate(String title) {
+        if (authorEditText.getText().toString().length() == 0 || descriptionEditText.getText().toString().length() == 0) {
+            return false;
         }
+        getBooks();
+        for (Book book : books) {
+            if (book.getTitle().equals(title)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -100,51 +105,52 @@ public class BookFragment extends Fragment {
         database.removeEventListener(bookListener);
     }
 
-    private void setupRecyclerView(){
+    private void setupRecyclerView() {
         RecyclerView recyclerView = currentView.findViewById(R.id.book_rv);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(),RecyclerView.VERTICAL,false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         bookAdapter = new BookAdapter(books);
         recyclerView.setAdapter(bookAdapter);
     }
 
-    public void getBooks(){
+    public void getBooks() {
         database.child(ARG_FB_BOOKS).get().addOnSuccessListener(dataSnapshot -> {
-            Log.i("firebase","Go value ${dataSnapshot.value}");
+            Log.i("firebase", "Go value ${dataSnapshot.value}");
             books.clear();
             DataSnapshot bookSnapshot = dataSnapshot.child(ARG_FB_BOOKS);
             Iterable<DataSnapshot> dataSnapshots = bookSnapshot.getChildren();
-            for (DataSnapshot item : dataSnapshots){
+            for (DataSnapshot item : dataSnapshots) {
                 BookFB bookFB = item.getValue(BookFB.class);
-                if (bookFB != null)
-                {
+                if (bookFB != null) {
                     Book book = new Book(bookFB);
                     books.add(book);
                 }
             }
             bookAdapter.notifyDataSetChanged();
-        }).addOnFailureListener(dataSnapshot->
-        Log.e("firebase","Error getting data",new Throwable()));
+        }).addOnFailureListener(dataSnapshot ->
+                Log.e("firebase", "Error getting data", new Throwable()));
     }
 
-    public void updateBook(Book book){
-        //to-do
+    public void updateBook(Book book) {
+        FirebaseDatabase.getInstance().getReference().child("node_id").child("author").setValue(book.getAuthor());
     }
 
-    public void insertBook(){
-        if(titleEditText.getText().toString() == null ||
-                authorEditText.getText().toString() == null ||
-                descriptionEditText.getText().toString() == null){
-            Toast.makeText(getContext(),"Cannot insert null values in database!",Toast.LENGTH_SHORT).show();
-            return;
+    public void insertBook() {
+        if (titleEditText.getText().toString().isEmpty()) {
+            titleEditText.setError(getString(R.string.title_required));
+        } else if (authorEditText.getText().toString().isEmpty()) {
+            authorEditText.setError(getString(R.string.author_required));
+        } else if (descriptionEditText.getText().toString().isEmpty()) {
+            descriptionEditText.setError(getString(R.string.description_required));
+        } else {
+            String titleText = titleEditText.getText().toString();
+            String authorText = authorEditText.getText().toString();
+            String descriptionText = descriptionEditText.getText().toString();
+
+            BookFB bookFB = new BookFB(titleText, authorText, descriptionText);
+            database.child(ARG_FB_BOOKS).push().setValue(bookFB);
+            Toast.makeText(getContext(), "Succsesfull insertion in database!", Toast.LENGTH_SHORT).show();
         }
-        String titleText = titleEditText.getText().toString();
-        String authorText = authorEditText.getText().toString();
-        String descriptionText = descriptionEditText.getText().toString();
-
-        BookFB bookFB = new BookFB(titleText,authorText,descriptionText);
-        database.child(ARG_FB_BOOKS).push().setValue(bookFB);
-        Toast.makeText(getContext(),"Succsesfull insertion in database!",Toast.LENGTH_SHORT).show();
     }
 
     ValueEventListener bookListener = new ValueEventListener() {
@@ -153,10 +159,9 @@ public class BookFragment extends Fragment {
             books.clear();
             DataSnapshot bookSnapshot = snapshot.child(ARG_FB_BOOKS);
             Iterable<DataSnapshot> dataSnapshots = bookSnapshot.getChildren();
-            for (DataSnapshot item : dataSnapshots){
+            for (DataSnapshot item : dataSnapshots) {
                 BookFB bookFB = item.getValue(BookFB.class);
-                if (bookFB != null)
-                {
+                if (bookFB != null) {
                     Book book = new Book(bookFB);
                     books.add(book);
                 }
@@ -166,7 +171,7 @@ public class BookFragment extends Fragment {
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-            Toast.makeText(getContext(),"Sorry something went wrong",Toast.LENGTH_SHORT);
+            Toast.makeText(getContext(), "Sorry something went wrong", Toast.LENGTH_SHORT);
         }
     };
 }

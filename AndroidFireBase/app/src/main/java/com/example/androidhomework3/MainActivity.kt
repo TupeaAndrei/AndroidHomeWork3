@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.androidhomework3.fragments.BookFragment
+import com.example.androidhomework3.fragments.FullItemFragment
 import com.example.androidhomework3.interfaces.IFragmentActivityCommunication
 import com.google.firebase.FirebaseApp
 
@@ -33,6 +34,22 @@ class MainActivity : AppCompatActivity(),IFragmentActivityCommunication {
         }
         val transaction : FragmentTransaction = fragmentManager.beginTransaction()
         transaction.add(R.id.f_container,fragment)
+        transaction.commit()
+    }
+
+    override fun onFullItemFragment(title: String?, author: String?, description: String?) {
+        //start process
+        val fragmentManager = supportFragmentManager
+        val transaction:FragmentTransaction = fragmentManager.beginTransaction()
+        //initialize fragment + bundle
+        val fragment = FullItemFragment()
+        val bundle = Bundle()
+        bundle.putString("title",title);
+        bundle.putString("author",author);
+        bundle.putString("description",description);
+        fragment.arguments = bundle
+        //finish transaction
+        transaction.replace(R.id.f_container,fragment)
         transaction.commit()
     }
 }

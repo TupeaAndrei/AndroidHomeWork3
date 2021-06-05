@@ -2,6 +2,8 @@ package com.example.androidhomework3.models;
 
 import com.example.androidhomework3.models.firebasemodels.BookFB;
 
+import java.util.Objects;
+
 public class Book {
     private String id;
     private String title;
@@ -24,6 +26,7 @@ public class Book {
     }
 
     public Book(String title, String author, String description) {
+        id = null;
         this.title = title;
         this.author = author;
         this.description = description;
@@ -59,5 +62,21 @@ public class Book {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(id, book.id) &&
+                Objects.equals(title, book.title) &&
+                Objects.equals(author, book.author) &&
+                Objects.equals(description, book.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, author, description);
     }
 }

@@ -10,12 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidhomework3.R;
+import com.example.androidhomework3.interfaces.IFragmentActivityCommunication;
 import com.example.androidhomework3.models.Book;
 
 import java.util.ArrayList;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
     private ArrayList<Book> books;
+    private IFragmentActivityCommunication iFragmentActivityCommunication;
 
     public BookAdapter(ArrayList<Book> books)
     {
@@ -35,6 +37,20 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book book = books.get(position);
         holder.bind(book);
+        ImageView arrow = holder.itemView.findViewById(R.id.arrow_image);
+        TextView title = holder.itemView.findViewById(R.id.book_title);
+        TextView author = holder.itemView.findViewById(R.id.book_author);
+        TextView description = holder.itemView.findViewById(R.id.book_description);
+        arrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (iFragmentActivityCommunication != null){
+                    iFragmentActivityCommunication.onFullItemFragment(title.getText().toString()
+                            ,author.getText().toString(),
+                            description.getText().toString());
+                }
+            }
+        });
     }
 
     @Override
@@ -42,6 +58,14 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         return books.size();
     }
 
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        if (recyclerView.getContext() instanceof IFragmentActivityCommunication){
+            iFragmentActivityCommunication = (IFragmentActivityCommunication) recyclerView.getContext();
+        }
+    }
 
     class BookViewHolder extends RecyclerView.ViewHolder{
         private TextView bookTitle;
@@ -55,6 +79,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             bookTitle = view.findViewById(R.id.book_title);
             bookAuthor = view.findViewById(R.id.book_author);
             bookDescription = view.findViewById(R.id.book_description);
+            arrow = view.findViewById(R.id.arrow_image);
         }
 
         public void bind(Book book)

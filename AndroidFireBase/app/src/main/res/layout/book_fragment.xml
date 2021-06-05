@@ -53,11 +53,23 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/book_rv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/default_padding"
         app:layout_constraintTop_toBottomOf="@id/add_update_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progress_bar_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

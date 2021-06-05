@@ -4,4 +4,7 @@
     <dimen name="default_author_size">16sp</dimen>
     <dimen name="default_description_size">14sp</dimen>
     <dimen name="default_padding">10dp</dimen>
+    <dimen name="full_title_size">26sp</dimen>
+    <dimen name="full_author_size">24sp</dimen>
+    <dimen name="full_description_size">22sp</dimen>
 </resources>
