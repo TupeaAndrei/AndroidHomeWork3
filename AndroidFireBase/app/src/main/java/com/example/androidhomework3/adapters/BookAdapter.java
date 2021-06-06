@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidhomework3.R;
+import com.example.androidhomework3.interfaces.IFirebaseAdapterComunication;
 import com.example.androidhomework3.interfaces.IFragmentActivityCommunication;
 import com.example.androidhomework3.models.Book;
 
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
     private ArrayList<Book> books;
     private IFragmentActivityCommunication iFragmentActivityCommunication;
+    private IFirebaseAdapterComunication iFirebaseAdapterComunication;
 
     public BookAdapter(ArrayList<Book> books)
     {
@@ -44,10 +46,20 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iFragmentActivityCommunication != null){
-                    iFragmentActivityCommunication.onFullItemFragment(title.getText().toString()
-                            ,author.getText().toString(),
+                if (iFirebaseAdapterComunication != null){
+                    Book newBook = new Book(title.getText().toString(),
+                            author.getText().toString(),
                             description.getText().toString());
+                    iFirebaseAdapterComunication.deleteItem(newBook);
+                }
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (iFragmentActivityCommunication != null){
+                    iFragmentActivityCommunication.onFullItemFragment(title.getText().toString(),
+                            author.getText().toString(),description.getText().toString());
                 }
             }
         });
@@ -64,6 +76,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         super.onAttachedToRecyclerView(recyclerView);
         if (recyclerView.getContext() instanceof IFragmentActivityCommunication){
             iFragmentActivityCommunication = (IFragmentActivityCommunication) recyclerView.getContext();
+        }
+        if (recyclerView.getContext() instanceof  IFirebaseAdapterComunication){
+            iFirebaseAdapterComunication = (IFirebaseAdapterComunication) recyclerView.getContext();
         }
     }
 

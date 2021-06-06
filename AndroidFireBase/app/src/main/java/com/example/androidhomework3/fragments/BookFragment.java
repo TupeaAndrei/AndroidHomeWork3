@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidhomework3.R;
 import com.example.androidhomework3.adapters.BookAdapter;
+import com.example.androidhomework3.interfaces.IFirebaseAdapterComunication;
 import com.example.androidhomework3.models.Book;
 import com.example.androidhomework3.models.firebasemodels.BookFB;
 import com.google.firebase.FirebaseApp;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -69,8 +71,9 @@ public class BookFragment extends Fragment {
         currentView.findViewById(R.id.add_update_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkForUpdate(titleEditText.getText().toString())) {
-                    updateBook(new Book(titleEditText.toString(), authorEditText.toString(), descriptionEditText.toString()));
+                Book oldBook = checkForUpdate(titleEditText.getText().toString());
+                if (oldBook != null) {
+                    updateBook(oldBook, authorEditText.getText().toString(), descriptionEditText.getText().toString());
                     Toast.makeText(getContext(), "Book Updated!", Toast.LENGTH_SHORT);
                 } else {
                     insertBook();
@@ -80,18 +83,22 @@ public class BookFragment extends Fragment {
     }
 
 
-    private boolean checkForUpdate(String title) {
+    private Book checkForUpdate(String title) {
         if (authorEditText.getText().toString().length() == 0 || descriptionEditText.getText().toString().length() == 0) {
-            return false;
+            return null;
         }
         getBooks();
         for (Book book : books) {
+            if (book == null){
+                continue;
+            }
             if (book.getTitle().equals(title)) {
-                return true;
+                return book;
             }
         }
-        return false;
+        return null;
     }
+
 
     @Override
     public void onStart() {
@@ -131,8 +138,23 @@ public class BookFragment extends Fragment {
                 Log.e("firebase", "Error getting data", new Throwable()));
     }
 
-    public void updateBook(Book book) {
-        FirebaseDatabase.getInstance().getReference().child("node_id").child("author").setValue(book.getAuthor());
+    public void updateBook(Book oldBook,String newAuthor,String newDescription) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        Query myQuery = database.child(ARG_FB_BOOKS).orderByChild("title").equalTo(oldBook.getTitle());
+        myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot mySnapShot : snapshot.getChildren()){
+                    mySnapShot.child("author").getRef().setValue(newAuthor);
+                    mySnapShot.child("description").getRef().setValue(newDescription);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                //TOd
+            }
+        });
     }
 
     public void insertBook() {
@@ -171,7 +193,27 @@ public class BookFragment extends Fragment {
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-            Toast.makeText(getContext(), "Sorry something went wrong", Toast.LENGTH_SHORT);
+            Toast.makeText(getContext(), "Sorry something went wrong", Toast.LENGTH_SHORT).show();
         }
     };
+
+
+    public void deleteItem(Book book) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        Query myQuery = database.child(ARG_FB_BOOKS).orderByChild("title").equalTo(book.getTitle());
+        myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot mySnapshot : snapshot.getChildren()){
+                    mySnapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(ARG_FB_BOOKS,"Unexpected error",error.toException());
+            }
+        });
+        Toast.makeText(getContext(),"Item got deleted",Toast.LENGTH_LONG).show();
+    }
 }

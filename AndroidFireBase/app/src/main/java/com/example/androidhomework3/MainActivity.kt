@@ -6,10 +6,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.androidhomework3.fragments.BookFragment
 import com.example.androidhomework3.fragments.FullItemFragment
+import com.example.androidhomework3.interfaces.IFirebaseAdapterComunication
 import com.example.androidhomework3.interfaces.IFragmentActivityCommunication
+import com.example.androidhomework3.models.Book
 import com.google.firebase.FirebaseApp
 
-class MainActivity : AppCompatActivity(),IFragmentActivityCommunication {
+class MainActivity : AppCompatActivity(),IFragmentActivityCommunication,IFirebaseAdapterComunication {
+    private var loadedFragment = BookFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,8 +23,11 @@ class MainActivity : AppCompatActivity(),IFragmentActivityCommunication {
     fun onAddInitialFragment(){
         val fragmentManager = supportFragmentManager
         val transaction : FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.add(R.id.f_container,BookFragment())
+        val currentFragment = BookFragment()
+        transaction.add(R.id.f_container,currentFragment,"book_fragment").addToBackStack(null)
         transaction.commit()
+
+        loadedFragment = currentFragment
     }
 
     override fun onReplaceFragment(tag:String){
@@ -33,7 +40,7 @@ class MainActivity : AppCompatActivity(),IFragmentActivityCommunication {
             }
         }
         val transaction : FragmentTransaction = fragmentManager.beginTransaction()
-        transaction.add(R.id.f_container,fragment)
+        transaction.add(R.id.f_container,fragment,"book_fragment")
         transaction.commit()
     }
 
@@ -49,7 +56,12 @@ class MainActivity : AppCompatActivity(),IFragmentActivityCommunication {
         bundle.putString("description",description);
         fragment.arguments = bundle
         //finish transaction
-        transaction.replace(R.id.f_container,fragment)
+        transaction.replace(R.id.f_container,fragment).addToBackStack(null)
         transaction.commit()
     }
+
+    override fun deleteItem(book: Book?) {
+        loadedFragment.deleteItem(book);
+    }
+
 }
